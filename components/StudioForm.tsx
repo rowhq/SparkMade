@@ -6,12 +6,41 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Check, Copy, Share2 } from 'lucide-react';
 
 export function StudioForm() {
   const router = useRouter();
   const [idea, setIdea] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ projectId?: string; error?: string; demo?: boolean; data?: any; message?: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyShareLink = (projectId: string) => {
+    const url = `${window.location.origin}/product/${projectId}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareOnSocial = (platform: 'twitter' | 'facebook' | 'linkedin', projectId: string) => {
+    const url = `${window.location.origin}/product/${projectId}`;
+    const text = 'Check out my new product idea!';
+
+    let shareUrl = '';
+    switch (platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        break;
+    }
+
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +52,7 @@ export function StudioForm() {
 
     setLoading(true);
     setResult(null);
+    setCopied(false);
 
     try {
       console.log('Sending request to API...');
@@ -112,17 +142,76 @@ export function StudioForm() {
               <div className="p-4 bg-green-500/10 border border-green-500 rounded-lg space-y-4">
                 <div>
                   <p className="text-sm font-medium text-green-700 mb-2">
-                    Project created successfully!
+                    🎉 Product is live and ready to share!
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    Your AI-generated product brief is ready. Redirecting to project page...
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Your AI-generated product is now live. Share it with friends so they can back it!
                   </p>
+
+                  {/* Share Link */}
+                  <div className="bg-white/50 border rounded-lg p-3 mb-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <code className="text-xs text-muted-foreground flex-1 overflow-hidden text-ellipsis">
+                        {window.location.origin}/product/{result.projectId}
+                      </code>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyShareLink(result.projectId!)}
+                        className="flex-shrink-0"
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="h-3 w-3 mr-1" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3 w-3 mr-1" />
+                            Copy Link
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Social Share Buttons */}
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => shareOnSocial('twitter', result.projectId!)}
+                      className="flex-1"
+                    >
+                      <Share2 className="h-3 w-3 mr-1" />
+                      Twitter
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => shareOnSocial('facebook', result.projectId!)}
+                      className="flex-1"
+                    >
+                      <Share2 className="h-3 w-3 mr-1" />
+                      Facebook
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => shareOnSocial('linkedin', result.projectId!)}
+                      className="flex-1"
+                    >
+                      <Share2 className="h-3 w-3 mr-1" />
+                      LinkedIn
+                    </Button>
+                  </div>
                 </div>
+
                 <Button
-                  onClick={() => router.push(`/projects/${result.projectId}`)}
+                  onClick={() => router.push(`/product/${result.projectId}`)}
                   className="w-full"
                 >
-                  View Project Now
+                  View Product Page
                 </Button>
               </div>
             )}

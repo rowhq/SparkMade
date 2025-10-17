@@ -135,7 +135,7 @@ export async function startDraft(userId: string, ideaText: string): Promise<stri
       deadlineAt: deadline,
       riskFlags: [],
       complianceStatus: 'PASS',
-      status: 'DRAFT',
+      status: 'LIVE', // Changed from DRAFT to LIVE so it's immediately shareable
       creatorId: userId,
     },
   });
