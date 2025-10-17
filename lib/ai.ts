@@ -7,7 +7,7 @@ import type {
   ManufacturabilityScore,
   ListingCopy,
   FundingSuggestion,
-} from '@originai/contracts';
+} from '@/contracts';
 import { prisma } from './prisma';
 
 const anthropic = new Anthropic({
@@ -18,7 +18,7 @@ const MODEL = 'claude-3-5-sonnet-20241022';
 
 // Load prompts from filesystem
 function loadPrompt(name: string): string {
-  const promptPath = join(process.cwd(), '../../packages/config/prompts', `${name}.system.txt`);
+  const promptPath = join(process.cwd(), 'prompts', `${name}.system.txt`);
   try {
     return readFileSync(promptPath, 'utf-8');
   } catch (error) {
@@ -137,7 +137,7 @@ export async function iterateProject(
     throw new Error('Project not found');
   }
 
-  const currentBrief = project.aiBriefJson as ProductBrief;
+  const currentBrief = project.aiBriefJson as unknown as ProductBrief;
 
   let updatedBrief: ProductBrief;
 
@@ -175,7 +175,7 @@ export async function generateSpec(projectId: string): Promise<SpecPack> {
     throw new Error('Project not found');
   }
 
-  const brief = project.aiBriefJson as ProductBrief;
+  const brief = project.aiBriefJson as unknown as ProductBrief;
   const specPrompt = loadPrompt('brief_to_spec');
   const specPack: SpecPack = await callClaudeJSON<SpecPack>(
     specPrompt,
@@ -240,7 +240,7 @@ export async function finalizeForReview(projectId: string): Promise<void> {
     throw new Error('Project not found');
   }
 
-  const brief = project.aiBriefJson as ProductBrief;
+  const brief = project.aiBriefJson as unknown as ProductBrief;
 
   // Run compliance check
   const isBanned = await checkBannedCategory(brief.category);
@@ -276,7 +276,7 @@ async function checkBannedCategory(category: string): Promise<boolean> {
   try {
     const bannedPath = join(
       process.cwd(),
-      '../../packages/config/rules/banned_categories.json'
+      'rules/banned_categories.json'
     );
     const bannedData = JSON.parse(readFileSync(bannedPath, 'utf-8'));
     const banned: string[] = bannedData.banned || [];
@@ -304,7 +304,7 @@ export async function canvasChat(
     throw new Error('Project not found');
   }
 
-  const brief = project.aiBriefJson as ProductBrief;
+  const brief = project.aiBriefJson as unknown as ProductBrief;
   const systemPrompt = loadPrompt('canvas_runtime');
 
   const context = `Current ProductBrief:\n${JSON.stringify(brief, null, 2)}\n\n`;

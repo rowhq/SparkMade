@@ -6,20 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-
-interface ProjectBrief {
-  name: string;
-  tagline: string;
-  problem: string;
-  audience: string;
-  features: string[];
-  materials: string[];
-  dimensions?: string;
-  estimated_cost: number;
-  manufacturing_risk: string;
-  category: string;
-  design_style: string;
-}
+import type { ProductBrief } from '@/contracts';
 
 export default async function ProjectPage({ params }: { params: { id: string } }) {
   const project = await prisma.project.findUnique({
@@ -38,7 +25,7 @@ export default async function ProjectPage({ params }: { params: { id: string } }
     notFound();
   }
 
-  const brief = project.aiBriefJson as ProductBrief;
+  const brief = project.aiBriefJson as unknown as ProductBrief;
 
   // Calculate funding progress
   const totalPledged = project.pledges.reduce((sum, pledge) => sum + pledge.amount, 0);

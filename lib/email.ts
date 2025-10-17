@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const FROM_EMAIL = 'OriginAI <no-reply@originai.com>';
 
@@ -11,7 +11,7 @@ interface EmailOptions {
 }
 
 async function sendEmail(options: EmailOptions) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!resend) {
     console.log('No Resend API key, skipping email:', options.subject);
     return;
   }

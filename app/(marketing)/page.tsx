@@ -2,7 +2,7 @@ import { BrandShell } from '@/components/brand/BrandShell';
 import { Hero } from '@/components/brand/Hero';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProductCard } from '@/components/ProductCard';
-import { COPY } from '@originai/contracts';
+import { COPY } from '@/contracts';
 
 export default async function HomePage() {
   // Database not configured yet - showing demo UI only

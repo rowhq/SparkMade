@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { prisma } from '@/lib/prisma';
 import { formatDate } from '@/lib/utils';
-import type { ProductBrief } from '@originai/contracts';
+import type { ProductBrief } from '@/contracts';
 
 async function getProject(id: string) {
   return await prisma.project.findUnique({
@@ -30,7 +30,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
     notFound();
   }
 
-  const brief = project.aiBriefJson as ProductBrief;
+  const brief = project.aiBriefJson as unknown as ProductBrief;
   const currentReservations = project.pledges.filter((p) => p.status === 'HELD').length;
 
   return (

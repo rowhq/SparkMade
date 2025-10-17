@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, daysUntil } from '@/lib/utils';
-import { COPY } from '@originai/contracts';
+import { COPY } from '@/contracts';
 
 interface DepositWidgetProps {
   projectId: string;
