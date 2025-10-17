@@ -10,9 +10,16 @@ import type {
 } from '@/contracts';
 import { prisma } from './prisma';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+let anthropic: Anthropic | null = null;
+
+function getAnthropic(): Anthropic {
+  if (!anthropic) {
+    anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY || 'dummy-key-for-build',
+    });
+  }
+  return anthropic;
+}
 
 const MODEL = 'claude-3-5-sonnet-20241022';
 
@@ -41,7 +48,7 @@ function getFallbackPrompt(name: string): string {
 }
 
 async function callClaude(systemPrompt: string, userMessage: string): Promise<string> {
-  const response = await anthropic.messages.create({
+  const response = await getAnthropic().messages.create({
     model: MODEL,
     max_tokens: 2048,
     system: systemPrompt,
@@ -314,7 +321,7 @@ export async function canvasChat(
     { role: 'user' as const, content: userMessage },
   ];
 
-  const response = await anthropic.messages.create({
+  const response = await getAnthropic().messages.create({
     model: MODEL,
     max_tokens: 2048,
     system: systemPrompt + '\n\n' + context,
