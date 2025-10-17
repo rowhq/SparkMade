@@ -13,57 +13,147 @@ interface SearchParams {
   status?: string;
 }
 
+// Dummy data for when database is not available
+const DUMMY_PROJECTS = [
+  {
+    id: '1',
+    title: 'EcoBottle Pro',
+    tagline: 'The smart water bottle that tracks your hydration',
+    heroImages: [],
+    depositAmount: 2500,
+    priceTarget: 4900,
+    currentFunding: 15000,
+    thresholdValue: 100,
+    deadlineAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    category: 'Health & Fitness',
+  },
+  {
+    id: '2',
+    title: 'UrbanGarden Kit',
+    tagline: 'Grow fresh herbs in your apartment',
+    heroImages: [],
+    depositAmount: 3500,
+    priceTarget: 7900,
+    currentFunding: 28000,
+    thresholdValue: 75,
+    deadlineAt: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+    category: 'Home & Garden',
+  },
+  {
+    id: '3',
+    title: 'FocusPods',
+    tagline: 'Noise-cancelling earbuds designed for deep work',
+    heroImages: [],
+    depositAmount: 4900,
+    priceTarget: 12900,
+    currentFunding: 65000,
+    thresholdValue: 200,
+    deadlineAt: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+    category: 'Electronics',
+  },
+  {
+    id: '4',
+    title: 'MinimalDesk',
+    tagline: 'Standing desk that fits any space',
+    heroImages: [],
+    depositAmount: 9900,
+    priceTarget: 29900,
+    currentFunding: 125000,
+    thresholdValue: 50,
+    deadlineAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+    category: 'Furniture',
+  },
+  {
+    id: '5',
+    title: 'TravelPack Ultra',
+    tagline: 'The only backpack you need for any trip',
+    heroImages: [],
+    depositAmount: 5900,
+    priceTarget: 14900,
+    currentFunding: 89000,
+    thresholdValue: 150,
+    deadlineAt: new Date(Date.now() + 40 * 24 * 60 * 60 * 1000),
+    category: 'Travel',
+  },
+  {
+    id: '6',
+    title: 'ChefKnife Pro',
+    tagline: 'Japanese steel knife for home chefs',
+    heroImages: [],
+    depositAmount: 3900,
+    priceTarget: 8900,
+    currentFunding: 42000,
+    thresholdValue: 100,
+    deadlineAt: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+    category: 'Kitchen',
+  },
+];
+
+const DUMMY_CATEGORIES = ['Health & Fitness', 'Home & Garden', 'Electronics', 'Furniture', 'Travel', 'Kitchen'];
+
 export default async function ExplorePage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  // Fetch LIVE projects from database
-  const whereClause: any = {
-    status: 'LIVE',
-  };
+  let projectsWithFunding: any[] = [];
+  let categories: string[] = [];
 
-  if (searchParams.category) {
-    whereClause.category = searchParams.category;
-  }
-
-  const projects = await prisma.project.findMany({
-    where: whereClause,
-    include: {
-      creator: {
-        select: {
-          name: true,
-        },
-      },
-      pledges: {
-        select: {
-          amount: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-
-  // Calculate funding for each project
-  const projectsWithFunding = projects.map((project) => {
-    const currentFunding = project.pledges.reduce((sum, pledge) => sum + pledge.amount, 0);
-    return {
-      ...project,
-      currentFunding,
+  try {
+    // Try to fetch from database
+    const whereClause: any = {
+      status: 'LIVE',
     };
-  });
 
-  // Get unique categories
-  const allProjects = await prisma.project.findMany({
-    where: { status: 'LIVE' },
-    select: {
-      category: true,
-    },
-  });
+    if (searchParams.category) {
+      whereClause.category = searchParams.category;
+    }
 
-  const categories = Array.from(new Set(allProjects.map((p) => p.category))).sort();
+    const projects = await prisma.project.findMany({
+      where: whereClause,
+      include: {
+        creator: {
+          select: {
+            name: true,
+          },
+        },
+        pledges: {
+          select: {
+            amount: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    // Calculate funding for each project
+    projectsWithFunding = projects.map((project) => {
+      const currentFunding = project.pledges.reduce((sum, pledge) => sum + pledge.amount, 0);
+      return {
+        ...project,
+        currentFunding,
+      };
+    });
+
+    // Get unique categories
+    const allProjects = await prisma.project.findMany({
+      where: { status: 'LIVE' },
+      select: {
+        category: true,
+      },
+    });
+
+    categories = Array.from(new Set(allProjects.map((p) => p.category))).sort();
+  } catch (error) {
+    // Use dummy data if database is not available
+    console.warn('Database not available, using dummy data:', error);
+    projectsWithFunding = searchParams.category
+      ? DUMMY_PROJECTS.filter((p) => p.category === searchParams.category)
+      : DUMMY_PROJECTS;
+    categories = DUMMY_CATEGORIES;
+  }
 
   return (
     <BrandShell>
