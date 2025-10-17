@@ -27,8 +27,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if database is configured
-    const hasDatabase = process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy');
+    // Check if database is configured (either DATABASE_URL or POSTGRES_PRISMA_URL from Vercel)
+    const hasDatabase = (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) ||
+                        process.env.POSTGRES_PRISMA_URL;
 
     if (hasDatabase) {
       // Full flow: generate and save to database
