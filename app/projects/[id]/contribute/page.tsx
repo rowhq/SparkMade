@@ -6,6 +6,9 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default async function ContributePage({ params }: { params: { id: string } }) {
   const project = await prisma.project.findUnique({
     where: { id: params.id },

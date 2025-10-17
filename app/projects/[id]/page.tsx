@@ -8,6 +8,9 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { ProductBrief } from '@/contracts';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default async function ProjectPage({ params }: { params: { id: string } }) {
   const project = await prisma.project.findUnique({
     where: { id: params.id },

@@ -6,6 +6,9 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { EmptyState } from '@/components/EmptyState';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export default async function MyProjectsPage() {
   // For demo purposes, using demo-user
   // In production, this would use actual auth

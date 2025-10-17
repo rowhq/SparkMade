@@ -9,6 +9,9 @@ import { prisma } from '@/lib/prisma';
 import { formatDate } from '@/lib/utils';
 import type { ProductBrief } from '@/contracts';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 async function getProject(id: string) {
   return await prisma.project.findUnique({
     where: { id },
