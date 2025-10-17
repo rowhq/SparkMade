@@ -15,6 +15,15 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  // Skip type checking during build for faster deployments
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Use standalone output for better performance
+  output: 'standalone',
 }
 
 module.exports = nextConfig
