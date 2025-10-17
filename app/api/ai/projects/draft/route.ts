@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { startDraft, generateDraftData } from '@/lib/ai';
+import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -32,6 +33,18 @@ export async function POST(req: NextRequest) {
                         process.env.POSTGRES_PRISMA_URL;
 
     if (hasDatabase) {
+      // Ensure demo user exists
+      await prisma.user.upsert({
+        where: { id: userId },
+        update: {},
+        create: {
+          id: userId,
+          email: 'demo@sparkmade.com',
+          name: 'Demo User',
+          role: 'CREATOR',
+        },
+      });
+
       // Full flow: generate and save to database
       const projectId = await startDraft(userId, text);
       return NextResponse.json({ projectId }, { status: 201 });
