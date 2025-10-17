@@ -1,0 +1,243 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String?
+  role          Role          @default(BACKER)
+  kycStatus     KycStatus     @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  pledges       Pledge[]
+  projects      Project[]     @relation("CreatorProjects")
+  manufacturer  Manufacturer?
+  comments      Comment[]
+  updates       Update[]
+}
+
+enum Role {
+  VISITOR
+  BACKER
+  CREATOR
+  MANUFACTURER
+  ADMIN
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Project {
+  id                String            @id @default(cuid())
+  creator           User              @relation("CreatorProjects", fields: [creatorId], references: [id])
+  creatorId         String
+  status            ProjectStatus     @default(DRAFT)
+  title             String
+  tagline           String
+  description       String            @db.Text
+  category          String
+  tags              String[]
+  heroImages        String[]
+  specImages        String[]
+  aiBriefJson       Json
+  specPackJson      Json?
+  bomJson           Json?
+  priceTarget       Int
+  depositAmount     Int
+  thresholdType     ThresholdType     @default(UNITS)
+  thresholdValue    Int
+  deadlineAt        DateTime
+  lockedAt          DateTime?
+  riskFlags         String[]
+  complianceStatus  ComplianceStatus  @default(PASS)
+  manufacturerId    String?
+  manufacturer      Manufacturer?     @relation(fields: [manufacturerId], references: [id])
+  updates           Update[]
+  pledges           Pledge[]
+  milestones        Milestone[]
+  quotes            Quote[]
+  complianceChecks  ComplianceCheck[]
+  comments          Comment[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([status])
+  @@index([creatorId])
+  @@index([category])
+}
+
+enum ProjectStatus {
+  DRAFT
+  REVIEW
+  LIVE
+  LOCKED
+  PRODUCING
+  FULFILLED
+  CANCELED
+  FROZEN
+}
+
+enum ThresholdType {
+  UNITS
+  DOLLARS
+}
+
+enum ComplianceStatus {
+  PASS
+  WARN
+  FAIL
+}
+
+model Pledge {
+  id            String       @id @default(cuid())
+  project       Project      @relation(fields: [projectId], references: [id])
+  projectId     String
+  backer        User         @relation(fields: [backerId], references: [id])
+  backerId      String
+  amount        Int
+  status        PledgeStatus @default(HELD)
+  paymentIntent String
+  escrowId      String
+  createdAt     DateTime     @default(now())
+  refundedAt    DateTime?
+  convertedAt   DateTime?
+
+  @@index([projectId])
+  @@index([backerId])
+  @@index([status])
+}
+
+enum PledgeStatus {
+  PENDING
+  HELD
+  REFUNDED
+  CONVERTED
+}
+
+model Manufacturer {
+  id             String    @id @default(cuid())
+  user           User      @relation(fields: [userId], references: [id])
+  userId         String    @unique
+  name           String
+  capabilities   String[]
+  certifications String[]
+  regions        String[]
+  moq            Int?
+  payoutAccount  String?
+  rating         Float?    @default(5.0)
+  quotes         Quote[]
+  projects       Project[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Quote {
+  id             String       @id @default(cuid())
+  project        Project      @relation(fields: [projectId], references: [id])
+  projectId      String
+  manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id])
+  manufacturerId String
+  unitCost       Int
+  toolingCost    Int
+  leadTimeDays   Int
+  moq            Int
+  notes          String?      @db.Text
+  selected       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([projectId])
+  @@index([manufacturerId])
+}
+
+model Milestone {
+  id             String          @id @default(cuid())
+  project        Project         @relation(fields: [projectId], references: [id])
+  projectId      String
+  name           String
+  percentRelease Int
+  dueAt          DateTime
+  status         MilestoneStatus @default(PLANNED)
+  evidence       String[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([projectId])
+}
+
+enum MilestoneStatus {
+  PLANNED
+  SUBMITTED
+  APPROVED
+  FAILED
+}
+
+model Transaction {
+  id         String          @id @default(cuid())
+  type       TransactionType
+  amount     Int
+  currency   String          @default("usd")
+  externalId String
+  status     String
+  projectId  String?
+  pledgeId   String?
+  createdAt  DateTime        @default(now())
+
+  @@index([projectId])
+  @@index([pledgeId])
+}
+
+enum TransactionType {
+  DEPOSIT
+  RELEASE
+  REFUND
+  FEE
+}
+
+model ComplianceCheck {
+  id        String           @id @default(cuid())
+  project   Project          @relation(fields: [projectId], references: [id])
+  projectId String
+  result    ComplianceStatus
+  notes     String?          @db.Text
+  checklist Json
+  createdAt DateTime         @default(now())
+
+  @@index([projectId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  text      String   @db.Text
+  isCreator Boolean  @default(false)
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model Update {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}

@@ -1,0 +1,25 @@
+{
+  "banned": [
+    "Weapons and parts",
+    "Explosives",
+    "Regulated weapons",
+    "Hazardous chemicals",
+    "Toxins",
+    "Spyware",
+    "Surveillance gear",
+    "Medical devices",
+    "Health claims",
+    "Nicotine products",
+    "Alcohol",
+    "Recreational drugs",
+    "Adult products",
+    "Prescription drugs",
+    "Food-contact items",
+    "Ingestibles",
+    "High-voltage electronics",
+    "Lithium batteries"
+  ],
+  "restricted": [
+    "Items with obvious IP infringement"
+  ]
+}
