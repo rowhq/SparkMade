@@ -9,6 +9,7 @@ interface ShareButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   showLabel?: boolean;
+  className?: string;
 }
 
 export function ShareButton({
@@ -16,6 +17,7 @@ export function ShareButton({
   variant = 'outline',
   size = 'default',
   showLabel = true,
+  className,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
@@ -27,7 +29,7 @@ export function ShareButton({
   };
 
   return (
-    <Button variant={variant} size={size} onClick={copyShareLink}>
+    <Button variant={variant} size={size} onClick={copyShareLink} className={className}>
       {copied ? (
         <>
           <Check className="h-4 w-4 mr-2" />
