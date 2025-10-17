@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="sparkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#sparkGradient)"/>
+
+  <!-- Lightning bolt / spark icon -->
+  <path d="M280 120L200 280H256L232 392L312 232H256L280 120Z" fill="white" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- Product cube outline -->
+  <path d="M160 180L256 140L352 180V300L256 340L160 300V180Z" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round" opacity="0.6"/>
+  <path d="M160 180L256 220L352 180M256 220V340" stroke="white" stroke-width="6" stroke-linejoin="round" opacity="0.6"/>
+</svg>

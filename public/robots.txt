@@ -1,0 +1,10 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin/auth pages
+Disallow: /api/
+Disallow: /my-projects
+
+# Sitemap
+Sitemap: https://sparkmade.vercel.app/sitemap.xml
