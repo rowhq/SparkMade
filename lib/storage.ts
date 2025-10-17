@@ -1,7 +1,8 @@
 /**
- * Storage utility for S3-compatible services
- * Supports AWS S3, Cloudflare R2, Supabase Storage, etc.
+ * Storage utility using Vercel Blob
  */
+
+import { put } from '@vercel/blob';
 
 interface UploadResult {
   url: string;
@@ -9,38 +10,37 @@ interface UploadResult {
 }
 
 /**
- * Upload a file to S3-compatible storage
- * This is a stub - implement with your preferred S3 SDK
+ * Upload a file to Vercel Blob storage
  */
 export async function uploadFile(
   file: File | Buffer,
   key: string,
   contentType?: string
 ): Promise<UploadResult> {
-  // TODO: Implement with AWS SDK or compatible library
-  // Example with AWS SDK:
-  // const s3 = new S3Client({
-  //   region: 'auto',
-  //   endpoint: process.env.STORAGE_BUCKET_URL,
-  //   credentials: {
-  //     accessKeyId: process.env.STORAGE_ACCESS_KEY!,
-  //     secretAccessKey: process.env.STORAGE_SECRET_KEY!,
-  //   },
-  // });
-  //
-  // await s3.send(new PutObjectCommand({
-  //   Bucket: process.env.STORAGE_BUCKET_NAME!,
-  //   Key: key,
-  //   Body: buffer,
-  //   ContentType: contentType,
-  // }));
+  console.log('Uploading to Vercel Blob:', key);
 
-  console.log('Storage upload stub called for:', key);
+  const blob = await put(key, file, {
+    access: 'public',
+    contentType: contentType || 'application/octet-stream',
+  });
+
+  console.log('Upload complete:', blob.url);
 
   return {
-    url: `/uploads/${key}`,
-    key,
+    url: blob.url,
+    key: key,
   };
+}
+
+/**
+ * Upload an image buffer to Vercel Blob
+ */
+export async function uploadImage(
+  buffer: Buffer,
+  filename: string
+): Promise<string> {
+  const result = await uploadFile(buffer, filename, 'image/png');
+  return result.url;
 }
 
 /**

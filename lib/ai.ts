@@ -9,6 +9,8 @@ import type {
   FundingSuggestion,
 } from '@/contracts';
 import { prisma } from './prisma';
+import { generateProductImage } from './image-generation';
+import { uploadImage } from './storage';
 
 let anthropic: Anthropic | null = null;
 
@@ -114,7 +116,30 @@ export async function generateDraftData(ideaText: string) {
 export async function startDraft(userId: string, ideaText: string): Promise<string> {
   const { brief, imagePrompt, copy, funding } = await generateDraftData(ideaText);
 
-  // 5. Create project draft
+  // 5. Generate and upload hero image
+  let heroImages: string[] = [];
+  try {
+    console.log('Generating product image...');
+    const imageBuffer = await generateProductImage(imagePrompt);
+
+    // Create a unique filename
+    const timestamp = Date.now();
+    const sanitizedTitle = (copy.short_title || brief.name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .substring(0, 50);
+    const filename = `products/${sanitizedTitle}-${timestamp}.png`;
+
+    console.log('Uploading image to Vercel Blob...');
+    const imageUrl = await uploadImage(imageBuffer, filename);
+    heroImages = [imageUrl];
+    console.log('Image uploaded successfully:', imageUrl);
+  } catch (error) {
+    console.error('Failed to generate/upload image, continuing without it:', error);
+    // Continue without image - don't fail the whole draft creation
+  }
+
+  // 6. Create project draft
   const deadline = new Date();
   deadline.setDate(deadline.getDate() + 30); // Default 30 days
 
@@ -125,7 +150,7 @@ export async function startDraft(userId: string, ideaText: string): Promise<stri
       description: copy.human_story || brief.problem,
       category: brief.category,
       tags: brief.features.slice(0, 5),
-      heroImages: [], // Will be populated with actual image generation
+      heroImages,
       specImages: [],
       aiBriefJson: brief as any,
       priceTarget: Math.round(brief.estimated_cost * 100), // Convert to cents
