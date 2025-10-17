@@ -5,6 +5,9 @@ import { ProductCard } from '@/components/ProductCard';
 import { prisma } from '@/lib/prisma';
 import { Suspense } from 'react';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 interface SearchParams {
   category?: string;
   status?: string;
