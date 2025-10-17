@@ -51,13 +51,21 @@ export default async function MyProjectsPage() {
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Header */}
           <div className="space-y-4">
+            <div className="inline-block px-3 py-1 mb-2 text-sm font-medium bg-brand-secondary/10 text-brand-secondary rounded-full">
+              Your Dashboard
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold">My Projects</h1>
             <p className="text-lg text-muted-foreground">
-              Manage and track all your creative projects in one place.
+              Manage your AI-generated products, track backing progress, and engage with your supporters.
             </p>
-            <Button asChild>
-              <Link href="/studio">Create New Project</Link>
-            </Button>
+            <div className="flex gap-3">
+              <Button asChild>
+                <Link href="/studio">Create New Product</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/explore">Browse Marketplace</Link>
+              </Button>
+            </div>
           </div>
 
           {/* Projects List */}

@@ -159,10 +159,15 @@ export default async function ExplorePage({
     <BrandShell>
       <div className="py-12 bg-secondary/20">
         <div className="container mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Explore Projects</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Discover new product ideas from creators around the world.
-          </p>
+          <div className="max-w-4xl">
+            <div className="inline-block px-3 py-1 mb-4 text-sm font-medium bg-brand-primary/10 text-brand-primary rounded-full">
+              Product Marketplace
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Explore & Back Products</h1>
+            <p className="text-lg text-muted-foreground max-w-2xl">
+              Discover innovative products from creators around the world. Reserve your spot with a refundable deposit and help bring great ideas to life.
+            </p>
+          </div>
         </div>
       </div>
 

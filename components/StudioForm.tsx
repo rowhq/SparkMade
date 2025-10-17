@@ -1,19 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Copy, Share2 } from 'lucide-react';
+import { Check, Copy, Share2, Loader2, Sparkles, FileText, DollarSign, Wand2 } from 'lucide-react';
+
+const GENERATION_STEPS = [
+  { icon: Sparkles, label: 'Analyzing your idea', duration: 2000 },
+  { icon: FileText, label: 'Generating product brief', duration: 3000 },
+  { icon: DollarSign, label: 'Calculating pricing strategy', duration: 2000 },
+  { icon: Wand2, label: 'Writing marketing copy', duration: 2500 },
+  { icon: Check, label: 'Finalizing details', duration: 1500 },
+];
 
 export function StudioForm() {
   const router = useRouter();
   const [idea, setIdea] = useState('');
   const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [result, setResult] = useState<{ projectId?: string; error?: string; demo?: boolean; data?: any; message?: string } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Simulate progress through generation steps
+  useEffect(() => {
+    if (!loading) {
+      setCurrentStep(0);
+      return;
+    }
+
+    const stepInterval = setInterval(() => {
+      setCurrentStep((prev) => {
+        if (prev < GENERATION_STEPS.length - 1) {
+          return prev + 1;
+        }
+        return prev;
+      });
+    }, 2500);
+
+    return () => clearInterval(stepInterval);
+  }, [loading]);
 
   const copyShareLink = (projectId: string) => {
     const url = `${window.location.origin}/product/${projectId}`;
@@ -123,8 +151,73 @@ export function StudioForm() {
             </div>
 
             <Button type="submit" size="lg" className="w-full" disabled={loading}>
-              {loading ? 'Generating with AI...' : 'Generate with AI'}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating with AI...
+                </>
+              ) : (
+                'Generate with AI'
+              )}
             </Button>
+
+            {loading && (
+              <div className="p-6 bg-gradient-to-br from-brand-primary/5 to-brand-secondary/5 border border-brand-primary/20 rounded-lg space-y-4">
+                <div className="flex items-center justify-center mb-4">
+                  <Loader2 className="h-8 w-8 text-brand-primary animate-spin" />
+                </div>
+                <div className="space-y-3">
+                  {GENERATION_STEPS.map((step, index) => {
+                    const Icon = step.icon;
+                    const isActive = index === currentStep;
+                    const isCompleted = index < currentStep;
+
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                          isActive
+                            ? 'bg-brand-primary/10 scale-105'
+                            : isCompleted
+                            ? 'bg-green-500/10'
+                            : 'bg-secondary/50'
+                        }`}
+                      >
+                        <div
+                          className={`flex-shrink-0 ${
+                            isActive
+                              ? 'text-brand-primary'
+                              : isCompleted
+                              ? 'text-green-600'
+                              : 'text-muted-foreground'
+                          }`}
+                        >
+                          {isCompleted ? (
+                            <Check className="h-5 w-5" />
+                          ) : (
+                            <Icon className={`h-5 w-5 ${isActive ? 'animate-pulse' : ''}`} />
+                          )}
+                        </div>
+                        <span
+                          className={`text-sm font-medium ${
+                            isActive
+                              ? 'text-brand-primary'
+                              : isCompleted
+                              ? 'text-green-700'
+                              : 'text-muted-foreground'
+                          }`}
+                        >
+                          {step.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-center text-sm text-muted-foreground pt-2">
+                  This usually takes 10-15 seconds...
+                </p>
+              </div>
+            )}
 
             {result?.error && (
               <div className="p-4 bg-destructive/10 border border-destructive rounded-lg text-sm">

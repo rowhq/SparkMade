@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
-  { href: '/explore', label: 'Explore' },
-  { href: '/my-projects', label: 'My Projects' },
-  { href: '/studio', label: 'Studio' },
+  { href: '/explore', label: 'Explore', description: 'Browse & back products' },
+  { href: '/my-projects', label: 'My Projects', description: 'Your creations' },
+  { href: '/studio', label: 'AI Studio', description: 'Create new product' },
 ];
 
 const hasClerkKeys = typeof window !== 'undefined' &&
