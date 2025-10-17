@@ -72,17 +72,16 @@ OriginAI is a next-generation crowdfunding platform that helps anyone turn produ
 
 ```
 originai/
-├── apps/
-│   └── web/                 # Next.js application
-│       ├── app/            # App Router pages
-│       ├── components/     # React components
-│       └── lib/           # Utilities and integrations
-├── packages/
-│   ├── db/                # Prisma schema and migrations
-│   ├── contracts/         # Shared TypeScript types
-│   ├── config/           # AI prompts and rules
-│   └── emails/           # Email templates
-└── turbo.json           # Turborepo configuration
+├── app/                    # Next.js App Router pages
+├── components/             # React components
+├── lib/                    # Utilities and integrations
+├── prisma/                 # Database schema and migrations
+├── contracts/              # Shared TypeScript types
+├── prompts/                # AI system prompts
+├── rules/                  # Configuration rules
+├── package.json            # Dependencies
+├── next.config.js          # Next.js configuration
+└── tailwind.config.ts      # Tailwind CSS configuration
 ```
 
 ## Key Workflows
@@ -111,7 +110,7 @@ originai/
 
 ## Database Schema
 
-See `packages/db/prisma/schema.prisma` for the complete schema including:
+See `prisma/schema.prisma` for the complete schema including:
 
 - **Users** (with roles: Visitor, Backer, Creator, Manufacturer, Admin)
 - **Projects** (lifecycle: Draft → Review → Live → Locked → Producing → Fulfilled)
@@ -122,7 +121,7 @@ See `packages/db/prisma/schema.prisma` for the complete schema including:
 
 ## AI Prompts
 
-All AI prompts are stored in `packages/config/prompts/`:
+All AI prompts are stored in `prompts/`:
 
 - `idea_to_brief.system.txt` - Convert user text to ProductBrief JSON
 - `brief_to_render.system.txt` - Generate image prompts
