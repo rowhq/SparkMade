@@ -67,12 +67,14 @@ The database will be automatically set up during the first deployment if you hav
    - Go to [Vercel Dashboard](https://vercel.com/new)
    - Import your GitHub repository `rowhq/SparkMade`
 
-2. **Configure Build Settings**:
+2. **Configure Build Settings** (IMPORTANT for monorepo):
    - Framework Preset: **Next.js**
-   - Root Directory: `./` (leave as default)
-   - Build Command: `npm run build --filter=@originai/web`
-   - Output Directory: `apps/web/.next`
-   - Install Command: `npm install`
+   - Root Directory: **`apps/web`** (this is crucial for the monorepo structure)
+   - Build Command: Leave empty or use: `cd ../.. && npx turbo run build --filter=web`
+   - Output Directory: `.next` (relative to root directory)
+   - Install Command: Leave empty (Vercel auto-detects)
+
+   **Note**: Since this is a Turborepo monorepo, the root directory must be set to `apps/web`. Do not use a `vercel.json` file - configure these settings directly in the Vercel dashboard.
 
 3. **Deploy**: Click "Deploy" and Vercel will build and deploy your application
 
@@ -86,6 +88,13 @@ After your first deployment:
 
 ## Troubleshooting
 
+### 404 DEPLOYMENT_NOT_FOUND Error
+**Symptom**: After deploying, you see "404: NOT_FOUND - Code: DEPLOYMENT_NOT_FOUND"
+**Solution**: This happens when the root directory is not configured correctly for the monorepo.
+1. Go to your Vercel project Settings → General → Build & Development Settings
+2. Set **Root Directory** to `apps/web`
+3. Save and redeploy
+
 ### Build Fails with Database Error
 **Solution**: Make sure `DATABASE_URL` is set in Vercel environment variables
 
@@ -96,7 +105,10 @@ After your first deployment:
 **Solution**: Run `npm run db:seed` to populate the database with demo projects
 
 ### Turborepo Build Issues
-**Solution**: Ensure the build command includes the filter: `npm run build --filter=@originai/web`
+**Solution**:
+- Ensure the root directory is set to `apps/web` in Vercel settings
+- Do not use a `vercel.json` file for monorepo configuration
+- Let Vercel auto-detect the build command based on the root directory
 
 ## Database Providers
 
