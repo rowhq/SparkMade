@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { refundPaymentIntent } from '@/lib/stripe';
 import { sendProjectRefunded } from '@/lib/email';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 /**
  * Cron job to check for missed deadlines and auto-refund
  * Should be called daily via Vercel Cron or similar

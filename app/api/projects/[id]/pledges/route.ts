@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma';
 import { createDepositIntent } from '@/lib/stripe';
 import { sendDepositConfirmed } from '@/lib/email';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }

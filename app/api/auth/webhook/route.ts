@@ -3,6 +3,9 @@ import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { syncUser } from '@/lib/auth';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   // Get the headers
   const headerPayload = headers();
