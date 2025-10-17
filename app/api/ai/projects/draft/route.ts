@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { startDraft } from '@/lib/ai';
+import { startDraft, generateDraftData } from '@/lib/ai';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,21 +16,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
-    // Check if database is configured
-    if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('dummy')) {
+    // Check if Anthropic API key is configured
+    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'dummy-key-for-build') {
       return NextResponse.json(
         {
-          error: 'Database not configured',
-          details: 'The AI Studio requires a database connection. Please configure DATABASE_URL in your environment variables to use this feature.'
+          error: 'AI not configured',
+          details: 'Please configure ANTHROPIC_API_KEY in your environment variables to use AI generation.'
         },
         { status: 503 }
       );
     }
 
-    // Start AI draft generation
-    const projectId = await startDraft(userId, text);
+    // Check if database is configured
+    const hasDatabase = process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy');
 
-    return NextResponse.json({ projectId }, { status: 201 });
+    if (hasDatabase) {
+      // Full flow: generate and save to database
+      const projectId = await startDraft(userId, text);
+      return NextResponse.json({ projectId }, { status: 201 });
+    } else {
+      // Demo mode: generate but don't save
+      const draftData = await generateDraftData(text);
+      return NextResponse.json(
+        {
+          demo: true,
+          message: 'AI generation successful! (Demo mode - not saved to database)',
+          data: {
+            title: draftData.copy.short_title || draftData.brief.name,
+            tagline: draftData.copy.one_liner || draftData.brief.tagline,
+            description: draftData.copy.human_story || draftData.brief.problem,
+            category: draftData.brief.category,
+            features: draftData.brief.features,
+            materials: draftData.brief.materials,
+            estimatedCost: draftData.brief.estimated_cost,
+            depositCents: draftData.funding.deposit_cents,
+            thresholdValue: draftData.funding.threshold_value,
+          }
+        },
+        { status: 200 }
+      );
+    }
   } catch (error) {
     console.error('Error creating draft:', error);
 

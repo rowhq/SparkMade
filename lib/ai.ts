@@ -78,9 +78,9 @@ async function callClaudeJSON<T>(systemPrompt: string, userMessage: string): Pro
 }
 
 /**
- * Start a new draft from user text
+ * Generate draft data from user text (without saving to database)
  */
-export async function startDraft(userId: string, ideaText: string): Promise<string> {
+export async function generateDraftData(ideaText: string) {
   // 1. Call idea_to_brief
   const ideaPrompt = loadPrompt('idea_to_brief');
   const brief: ProductBrief = await callClaudeJSON<ProductBrief>(ideaPrompt, ideaText);
@@ -99,6 +99,20 @@ export async function startDraft(userId: string, ideaText: string): Promise<stri
     fundingPrompt,
     JSON.stringify(brief)
   );
+
+  return {
+    brief,
+    imagePrompt,
+    copy,
+    funding,
+  };
+}
+
+/**
+ * Start a new draft from user text
+ */
+export async function startDraft(userId: string, ideaText: string): Promise<string> {
+  const { brief, imagePrompt, copy, funding } = await generateDraftData(ideaText);
 
   // 5. Create project draft
   const deadline = new Date();

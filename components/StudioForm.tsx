@@ -11,7 +11,7 @@ export function StudioForm() {
   const router = useRouter();
   const [idea, setIdea] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ projectId?: string; error?: string } | null>(null);
+  const [result, setResult] = useState<{ projectId?: string; error?: string; demo?: boolean; data?: any; message?: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +46,9 @@ export function StudioForm() {
       if (!response.ok) {
         const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Failed to generate project');
         setResult({ error: errorMsg });
+      } else if (data.demo) {
+        // Demo mode: show generated data without redirect
+        setResult({ demo: true, data: data.data, message: data.message });
       } else {
         setResult({ projectId: data.projectId });
         // Redirect to project page after 2 seconds
@@ -121,6 +124,52 @@ export function StudioForm() {
                 >
                   View Project Now
                 </Button>
+              </div>
+            )}
+
+            {result?.demo && result?.data && (
+              <div className="p-4 bg-blue-500/10 border border-blue-500 rounded-lg space-y-4">
+                <div>
+                  <p className="text-sm font-medium text-blue-700 mb-2">
+                    AI Generation Successful! (Demo Mode)
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {result.message}
+                  </p>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-medium mb-1">Title:</p>
+                    <p className="text-muted-foreground">{result.data.title}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">Tagline:</p>
+                    <p className="text-muted-foreground">{result.data.tagline}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">Category:</p>
+                    <p className="text-muted-foreground">{result.data.category}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">Features:</p>
+                    <ul className="list-disc list-inside text-muted-foreground">
+                      {result.data.features?.map((feature: string, i: number) => (
+                        <li key={i}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">Estimated Cost:</p>
+                    <p className="text-muted-foreground">${result.data.estimatedCost}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">Suggested Deposit:</p>
+                    <p className="text-muted-foreground">${(result.data.depositCents / 100).toFixed(2)}</p>
+                  </div>
+                </div>
+                <div className="pt-2 border-t text-xs text-muted-foreground">
+                  <p>To save projects and access full features, configure a DATABASE_URL in your environment variables.</p>
+                </div>
               </div>
             )}
 
