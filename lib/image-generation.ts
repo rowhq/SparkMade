@@ -17,6 +17,12 @@ export async function generateProductImage(prompt: string): Promise<Buffer> {
 
   console.log('Generating image with Stability AI...');
 
+  // Create FormData for multipart/form-data request
+  const formData = new FormData();
+  formData.append('prompt', prompt);
+  formData.append('output_format', 'png');
+  formData.append('aspect_ratio', '16:9');
+
   const response = await fetch(
     `${STABILITY_API_HOST}/v2beta/stable-image/generate/ultra`,
     {
@@ -24,12 +30,9 @@ export async function generateProductImage(prompt: string): Promise<Buffer> {
       headers: {
         'Authorization': `Bearer ${STABILITY_API_KEY}`,
         'Accept': 'image/*',
+        // Don't set Content-Type - let fetch set it with proper boundary
       },
-      body: new URLSearchParams({
-        prompt: prompt,
-        output_format: 'png',
-        aspect_ratio: '16:9',
-      }),
+      body: formData,
     }
   );
 
