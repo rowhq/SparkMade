@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ShareButton } from '@/components/ShareButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { formatCurrency, daysUntil } from '@/lib/utils';
 import { COPY } from '@/contracts';
 
@@ -120,6 +122,16 @@ export function DepositWidget({
             >
               {loading ? 'Processing...' : 'Reserve with deposit'}
             </Button>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-center">Love this product?</p>
+              <ShareButton projectId={projectId} variant="outline" className="w-full" />
+              <p className="text-xs text-muted-foreground text-center">
+                Share with friends to help reach the funding goal!
+              </p>
+            </div>
 
             <p className="text-xs text-muted-foreground">
               {COPY.depositExplainer}
