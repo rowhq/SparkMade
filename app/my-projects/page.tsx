@@ -2,6 +2,7 @@ import { BrandShell } from '@/components/brand/BrandShell';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ShareButton } from '@/components/ShareButton';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { EmptyState } from '@/components/EmptyState';
@@ -87,9 +88,12 @@ export default async function MyProjectsPage() {
                         </CardTitle>
                         <CardDescription>{project.tagline}</CardDescription>
                       </div>
-                      <Button asChild>
-                        <Link href={`/projects/${project.id}`}>View Project</Link>
-                      </Button>
+                      <div className="flex gap-2">
+                        <ShareButton projectId={project.id} />
+                        <Button asChild>
+                          <Link href={`/projects/${project.id}`}>View Project</Link>
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>

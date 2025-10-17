@@ -109,10 +109,7 @@ export function StudioForm() {
         setResult({ demo: true, data: data.data, message: data.message });
       } else {
         setResult({ projectId: data.projectId });
-        // Redirect to project page after 2 seconds
-        setTimeout(() => {
-          router.push(`/projects/${data.projectId}`);
-        }, 2000);
+        // Don't auto-redirect - let user share first
       }
     } catch (error) {
       console.error('Error:', error);

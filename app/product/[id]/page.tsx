@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { BrandShell } from '@/components/brand/BrandShell';
 import { DepositWidget } from '@/components/DepositWidget';
+import { ShareButton } from '@/components/ShareButton';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -149,7 +150,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-4">
             <DepositWidget
               projectId={project.id}
               depositAmount={project.depositAmount}
@@ -159,6 +160,19 @@ export default async function ProductPage({ params }: { params: { id: string } }
               priceTarget={project.priceTarget}
               status={project.status}
             />
+
+            {/* Share Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Share this product</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Help bring this product to life by sharing it with your friends!
+                </p>
+                <ShareButton projectId={project.id} variant="default" className="w-full" />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
